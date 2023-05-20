@@ -19,7 +19,8 @@ export async function signUp(req, res){
 export async function signIn(req, res){
     try {
         const token = uuid()
-        console.log(token)
+        
+        await db.query(`INSERT INTO sessions ("userId", token) VALUES ($1, $2);`, [res.locals.user, token])
 
         res.status(200).send({token})
     } catch (err){
