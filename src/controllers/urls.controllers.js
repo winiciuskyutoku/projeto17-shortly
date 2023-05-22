@@ -14,7 +14,7 @@ export async function shortenUrl(req, res){
 
         const urlId = await db.query(`SELECT * FROM urls WHERE url = $1;`, [url])
 
-        res.status(201).send({id: urlId.rows[0].id, url: urlId.rows[0].url})
+        res.status(201).send({id: urlId.rows[0].id, shortUrl: shortenUrl})
     } catch(err){
         res.status(500).send(err.message)
     }
