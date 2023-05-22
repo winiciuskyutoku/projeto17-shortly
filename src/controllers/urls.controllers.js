@@ -32,7 +32,7 @@ export async function getShortUrl(req, res){
     const {shortUrl} = req.params
 
     try {
-        await db.query(`UPDATE urls SET "timesVisited" = "timesVisited" + 1 WHERE "shortUrl" = $1;`, [shortUrl])
+        await db.query(`UPDATE urls SET "visitCount" = "visitCount" + 1 WHERE "shortUrl" = $1;`, [shortUrl])
 
         res.redirect(res.locals.shortUrl.url)
     } catch (err) {

@@ -27,3 +27,33 @@ export async function signIn(req, res){
         res.status(500).send(err.message)
     }
 }
+
+export async function getUsers(req ,res){
+    const token = res.locals.session
+
+    try {
+        const userByToken = await db.query(`SELECT sessions."userId" FROM sessions WHERE token = $1;`, [token])
+        const userById = userByToken.rows[0].userId
+        
+        const getUserData = await db.query(`
+            SELECT users.id, users.name FROM users WHERE id = $1;
+        `, [userById])
+
+        console.log(getUserData.rows[0])
+
+        const getUserUrls = await db.query(`
+            SELECT urls.id, urls."shortUrl", urls.url, urls."visitCount" FROM urls WHERE "userId" = $1;
+        `, [userById])
+
+        const shortenedUrls = getUserUrls.rows
+        const sum = shortenedUrls.reduce((prevVal, currentVal) => {
+            return prevVal + currentVal.visitCount
+        }, 0)
+
+        const userTable = {...getUserData.rows[0], visitCount: sum, shortenedUrls}
+
+        res.status(200).send(userTable)
+    } catch (err) {
+        res.status(500).send(err.message)
+    }
+}
